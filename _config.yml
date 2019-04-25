@@ -3,7 +3,8 @@ name: Less Or More
 email: 1028764968@qq.com
 author:pkx10086
 url: https://pkx10086.github.io
-resume_site:pkx10086/pkx10086.github.io
+repository: pkx10086/pkx10086.github.io
+#resume_site:pkx10086/pkx10086.github.io
 github: https://github.com/pkx10086
 baseurl: "/LessOrMore"
 description: Actually, less is more!
