@@ -7,11 +7,11 @@ from pyquery import PyQuery as pq
 from config import *
 from urllib.parse import quote
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')
-browser = webdriver.Chrome(chrome_options=chrome_options)
+chrome_options  = webdriver.ChromeOptions()
+#chrome_options.add_argument('--headless') #关闭窗口
+browser = webdriver.Chrome(options=chrome_options)
 
-wait = WebDriverWait(browser, 10)
+wait = WebDriverWait(browser, 10,poll_frequency=0.5)
 
 def index_page(page):
     """
@@ -20,9 +20,11 @@ def index_page(page):
     """
     print('正在爬取第', page, '页')
     try:
-        url = 'https://s.taobao.com/search?q=' + quote(KEYWORD)
+        url = 'https://s.taobao.com/search?q=' + quote("iphone")
         browser.get(url)
+        print("-----------1----------")
         if page > 1:
+            print("----------2----------")
             input = wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '#mainsrp-pager div.form > input')))
             submit = wait.until(
@@ -30,19 +32,22 @@ def index_page(page):
             input.clear()
             input.send_keys(page)
             submit.click()
-        wait.until(
-            EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#mainsrp-pager li.item.active > span'), str(page)))
+        print("------------3-------------")
+        wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#mainsrp-pager li.item.active > span'), str(page)))
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.m-itemlist .items .item')))
-        get_products()
-    except TimeoutException:
+       # get_products()
+    except TimeoutException as tou:
+        print("TimeoutException error: {0}".format(tou))
         index_page(page)
-
+    except BaseException as e:
+        print("BaseException error: {0}".format(e))
 
 def get_products():
     """
     提取商品数据
     """
     html = browser.page_source
+    print(html)
     doc = pq(html)
     items = doc('#mainsrp-itemlist .items .item').items()
     for item in items:

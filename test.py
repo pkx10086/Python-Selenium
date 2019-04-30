@@ -2,7 +2,9 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-
+from config import *
+from pyquery import PyQuery as pq
+#import DButils
 '''
    模拟浏览器搜索
 '''
@@ -59,9 +61,52 @@ def waitS():
 
 	finally:
 		driver.quit()
-if __name__ =='__main__':
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless') #关闭窗口
+browser = webdriver.Chrome(options=chrome_options)
+#wait = WebDriverWait(browser, 10,poll_frequency=0.5)
+def grabDoubleColorBall(start,end):
+	url = "https://datachart.500.com/ssq/history/newinc/history.php?start="+str(start)+"&end="+str(end)
+	print("正在爬取第",start,"几期到",end,"的双色球")
+	browser.get(url)
 	
-	#search()
-	#单元测试
-	#unittest.main()
-	waitS()
+	getColors()
+
+def getColors():
+	"""
+    提取数据信息
+    """
+	try:
+		html = browser.page_source
+		#print("============1==============:{}",html)
+		if html == "":
+			print("数据为空，请重新请求")
+		else:
+			doc = pq(html)
+			oj = doc('.chart #tablelist #tdata .t_tr1')
+			data = oj.items()
+			for item in data:
+				#print(item)
+				for t in item.children().items():
+					print(t.html())
+			
+								
+			
+			print("===========================")
+			#print(oj)
+	except BaseException as b:
+		print("b:{}",b)
+def main():
+	'''
+	for i in range(1, MAX_PAGE + 1):
+		grabMovie(i)
+	'''
+	grabMovie(1)
+
+	browser.close()
+
+if __name__ =='__main__':
+	v ="_name_2"
+	b=v.replace("_","",1)
+	print(b)
